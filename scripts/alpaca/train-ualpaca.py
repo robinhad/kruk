@@ -40,7 +40,7 @@ config = LoraConfig(
 )
 model = get_peft_model(model, config)
 tokenizer.pad_token_id = 0  # unk. we want this to be different from the eos token
-data = load_dataset("json", data_files="scripts/alpaca/alpaca_data_translated.json")
+data = load_dataset("json", data_files="../../data/cc-by-nc/alpaca_data_translated.json")
 
 # def generate_prompt(data_point):
 #     if data_point["input"]:
