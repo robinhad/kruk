@@ -6,6 +6,8 @@ import time
 import glob
 import json
 
+# Note: run this script inside the scripts/alpaca folder
+
 tokenizer = AutoTokenizer.from_pretrained(
     "facebook/nllb-200-3.3B", src_lang="eng_Latn"
 )
