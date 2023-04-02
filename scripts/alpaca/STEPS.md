@@ -9,3 +9,15 @@
 
 1. `cd` into project root.
 2. `python scripts/alpaca/merge_checkpoint.py --base_model "decapoda-research/llama-7b-hf" --lora_model "robinhad/ualpaca-7b-llama" --output_dir merged`
+
+# Run llama.cpp with the same parameters
+1. Install `llama.cpp`
+2. Run
+```bash
+./main -m ./models/merged/ggml-model-q4_0.bin -n 256 --temp 0.2 --top_p 0.75 --top_k 50 --repeat_penalty 1.0 --repeat_last_n 256 -b 4 -c 256 --color -s 1680391377 -p "Унизу надається інструкція, яка описує завдання. Напиши відповідь, яка правильно доповнює запит.
+
+### Інструкція:
+Чому у качки жовті ноги?
+
+### Відповідь:"
+```
