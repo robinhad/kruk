@@ -37,6 +37,7 @@ Example:
 # Data 📚
 - [Alpaca Dataset](data/cc-by-nc/alpaca_data.json) - under CC-BY-NC 4.0 License. Used for generating Ukrainian transcripts.
 - [UAlpaca Dataset](data/cc-by-nc/alpaca_data_translated.json) - under CC-BY-NC 4.0 License. Was generated using NLLB-3.3B model with [translation script](scripts/alpaca/translate_using_nllb.py)
+- [Ukrainian StackEXchange https://huggingface.co/datasets/zeusfsx/ukrainian-stackexchange](https://huggingface.co/datasets/zeusfsx/ukrainian-stackexchange)
 
 # How to train 🏋️
 - [UAlpaca guide](scripts/alpaca/STEPS.md)
