@@ -8,6 +8,8 @@ This repository contains training scripts and examples for Ukrainian instruction
 # Models 🤖
 - [UAlpaca model (HuggingFace) (CC-BY-NC 4.0)](https://huggingface.co/robinhad/ualpaca-7b-llama) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/robinhad/kruk/blob/main/notebooks/ualpaca-lora.ipynb)
 
+**FOR RESEARCH PURPOSES ONLY**
+
 Example:
 
 ```
