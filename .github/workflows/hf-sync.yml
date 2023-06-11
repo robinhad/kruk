@@ -17,6 +17,6 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add space https://huggingface.co/spaces/robinhad/kruk
           git lfs migrate import --everything --include='X'
+          git remote add space https://huggingface.co/spaces/robinhad/kruk
           git push --force https://robinhad:$HF_TOKEN@huggingface.co/spaces/robinhad/kruk main
