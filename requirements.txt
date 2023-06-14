@@ -1,9 +1,10 @@
 tqdm
-openai
 datasets
-git+https://github.com/huggingface/transformers.git@c612628045822f909020f7eb6784c79700813eda # for LLaMa support, should be available in 4.28.0
+transformers # for LLaMa support, should be available in 4.28.0
 torch
 peft
 bitsandbytes
 sentencepiece
 tenacity
+scipy # for bitsandbytes
+gradio

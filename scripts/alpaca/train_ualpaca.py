@@ -3,7 +3,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 from datasets import load_dataset
 import transformers
-from transformers import AutoTokenizer, AutoConfig, LlamaForCausalLM 
+from transformers import LlamaForCausalLM 
 from transformers.models.llama.tokenization_llama import LlamaTokenizer
 from peft import prepare_model_for_int8_training, LoraConfig, get_peft_model
 
@@ -13,19 +13,20 @@ BATCH_SIZE = 128
 GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE
 EPOCHS = 3  # we don't need 3 tbh
 LEARNING_RATE = 3e-4  # the Karpathy constant
-CUTOFF_LEN = 256  # 256 accounts for about 96% of the data
+CUTOFF_LEN = 512  # 1024 accounts for about 99.5% of the data
 LORA_R = 8
 LORA_ALPHA = 16
 LORA_DROPOUT = 0.05
 
+model_name = "openlm-research/open_llama_7b"
 
 model = LlamaForCausalLM.from_pretrained(
-    "decapoda-research/llama-7b-hf",
+    model_name,
     load_in_8bit=True,
     device_map="auto",
 )
 tokenizer = LlamaTokenizer.from_pretrained(
-    "decapoda-research/llama-7b-hf", add_eos_token=True
+    model_name, add_eos_token=True
 )
 
 model = prepare_model_for_int8_training(model)
@@ -40,7 +41,7 @@ config = LoraConfig(
 )
 model = get_peft_model(model, config)
 tokenizer.pad_token_id = 0  # unk. we want this to be different from the eos token
-data = load_dataset("json", data_files="../../data/cc-by-nc/alpaca_data_translated.json")
+data = load_dataset("json", data_files="../../data/cc-by-sa-3.0/databricks-dolly-15k-translated.jsonl")
 
 # def generate_prompt(data_point):
 #     if data_point["input"]:
@@ -60,20 +61,20 @@ data = load_dataset("json", data_files="../../data/cc-by-nc/alpaca_data_translat
 
 # TODO: take a look at translation
 def generate_prompt(data_point):
-    if data_point["input"]:
+    if data_point["context"]:
         return f"""Унизу надається інструкція, яка описує завдання разом із вхідними даними, які надають додатковий контекст. Напиши відповідь, яка правильно доповнює запит.
 ### Інструкція:
 {data_point["instruction"]}
 ### Вхідні дані:
-{data_point["input"]}
+{data_point["context"]}
 ### Відповідь:
-{data_point["output"]}"""
+{data_point["response"]}"""
     else:
         return f"""Унизу надається інструкція, яка описує завдання. Напиши відповідь, яка правильно доповнює запит.
 ### Інструкція:
 {data_point["instruction"]}
 ### Відповідь:
-{data_point["output"]}"""
+{data_point["response"]}"""
 
 
 
@@ -83,17 +84,16 @@ def tokenize(prompt):
     result = tokenizer(
         prompt,
         truncation=True,
-        max_length=CUTOFF_LEN + 1,
-        padding="max_length",
+        max_length=CUTOFF_LEN,
+        #padding=True#"max_length",
     )
-    return {
-        "input_ids": result["input_ids"][:-1],
-        "attention_mask": result["attention_mask"][:-1],
-    }
+    return result
 
 
 data = data.shuffle().map(lambda x: tokenize(generate_prompt(x)))
 
+original_size = len(data["train"])
+print(f"Source data size: {original_size}")
 #hub_token = os.environ["HUB_TOKEN"]
 #print(f"Hub token: {hub_token}")
 
@@ -114,7 +114,7 @@ trainer = transformers.Trainer(
         #hub_token=hub_token,
         save_strategy="epoch",
     ),
-    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer, mlm=False),
+    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer, mlm=False, pad_to_multiple_of=1),
 )
 model.config.use_cache = False
 trainer.train(resume_from_checkpoint=False)
